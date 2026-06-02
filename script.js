@@ -1,3 +1,21 @@
+// ===== REGISTERED USERS DATABASE =====
+const registeredUsers = [
+    {
+        id: 1,
+        username: 'Sensus',
+        password: '1234',
+        email: 'sensus@company.com',
+        avatar: '👨‍💼'
+    },
+    {
+        id: 2,
+        username: 'Humoyun',
+        password: '1234',
+        email: 'humoyun@company.com',
+        avatar: '👨'
+    }
+];
+
 // ===== APPLICATION STATE =====
 const appState = {
     currentUser: null,
@@ -12,8 +30,8 @@ const appState = {
 const loginPage = document.getElementById('loginPage');
 const chatPage = document.getElementById('chatPage');
 const loginForm = document.getElementById('loginForm');
-const nameInput = document.getElementById('nameInput');
-const emailInput = document.getElementById('emailInput');
+const usernameInput = document.getElementById('usernameInput');
+const passwordInput = document.getElementById('passwordInput');
 const messageForm = document.getElementById('messageForm');
 const messageInput = document.getElementById('messageInput');
 const messagesContainer = document.getElementById('messagesContainer');
@@ -37,29 +55,43 @@ window.addEventListener('DOMContentLoaded', () => {
 function handleLogin(e) {
     e.preventDefault();
     
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
     
-    if (!name || !email) {
-        alert('Iltimos, barcha maydonlarni to\'ldiring!');
+    if (!username || !password) {
+        alert('⚠️ Iltimos, foydalanuvchi nomi va parolni kiriting!');
+        return;
+    }
+    
+    // Check credentials
+    const user = registeredUsers.find(u => u.username === username && u.password === password);
+    
+    if (!user) {
+        alert('❌ Foydalanuvchi nomi yoki parol noto\'g\'ri!\n\nTo\'g\'ri ma\'lumotlarni tekshiring.');
+        usernameInput.value = '';
+        passwordInput.value = '';
+        usernameInput.focus();
         return;
     }
     
     // Create current user
     appState.currentUser = {
-        id: Date.now(),
-        name: name,
-        email: email,
-        avatar: generateAvatar(name),
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
         joinedAt: new Date(),
         isOnline: true
     };
     
-    // Add user to list
-    appState.users.push(appState.currentUser);
+    // Add user to list if not already there
+    const existingUser = appState.users.find(u => u.id === user.id);
+    if (!existingUser) {
+        appState.users.push(appState.currentUser);
+    }
     
     // Add join activity
-    addActivity(`${name} jamoa'ga qo'shildi`, 'join');
+    addActivity(`${user.username} jamoa'ga qo'shildi`, 'join');
     
     // Switch to chat
     showChatPage();
@@ -70,7 +102,7 @@ function showChatPage() {
     loginPage.classList.remove('active');
     chatPage.classList.add('active');
     
-    currentUserName.textContent = appState.currentUser.name;
+    currentUserName.textContent = appState.currentUser.username;
     updateMembersList();
     messageInput.focus();
 }
@@ -95,7 +127,7 @@ function handleSendMessage(e) {
     const message = {
         id: Date.now(),
         userId: appState.currentUser.id,
-        userName: appState.currentUser.name,
+        userName: appState.currentUser.username,
         userAvatar: appState.currentUser.avatar,
         text: text,
         timestamp: new Date(),
@@ -106,7 +138,7 @@ function handleSendMessage(e) {
     displayMessage(message);
     
     // Add activity
-    addActivity(`${appState.currentUser.name} xabar yubordi`, 'message');
+    addActivity(`${appState.currentUser.username} xabar yubordi`, 'message');
     
     messageInput.value = '';
     messageInput.focus();
@@ -162,7 +194,7 @@ function simulateMessageFromOtherUser(replyTo) {
     const message = {
         id: Date.now(),
         userId: randomUser.id,
-        userName: randomUser.name,
+        userName: randomUser.username,
         userAvatar: randomUser.avatar,
         text: responses[Math.floor(Math.random() * responses.length)],
         timestamp: new Date(),
@@ -171,7 +203,7 @@ function simulateMessageFromOtherUser(replyTo) {
     
     appState.messages.push(message);
     displayMessage(message);
-    addActivity(`${randomUser.name} xabar yubordi`, 'message');
+    addActivity(`${randomUser.username} xabar yubordi`, 'message');
     scrollToBottom();
 }
 
@@ -231,7 +263,7 @@ function updateMembersList() {
             <div class="status-indicator ${status}"></div>
             <div class="member-avatar">${user.avatar}</div>
             <div class="member-details">
-                <div class="member-name">${user.name}</div>
+                <div class="member-name">${user.username}</div>
                 <div class="member-status">${user.isOnline ? '🟢 Online' : '⚪ Offline'}</div>
             </div>
         `;
@@ -252,58 +284,22 @@ function updateOnlineCount() {
 // ===== SHOW USER PROFILE =====
 function showUserProfile(user) {
     alert(`
-👤 ${user.name}
+👤 ${user.username}
 📧 ${user.email}
 ${user.isOnline ? '🟢 Online' : '⚪ Offline'}
 ⏰ Qo'shilgan vaqt: ${user.joinedAt.toLocaleString('uz-UZ')}
     `);
 }
 
-// ===== ADD NEW TEAM MEMBER (SIMULATION) =====
-function addTeamMember(name, email) {
-    const newUser = {
-        id: Date.now(),
-        name: name,
-        email: email,
-        avatar: generateAvatar(name),
-        joinedAt: new Date(),
-        isOnline: true
-    };
-    
-    appState.users.push(newUser);
-    addActivity(`${name} jamoa'ga qo'shildi`, 'join');
-    updateMembersList();
-}
-
-// ===== REMOVE TEAM MEMBER (SIMULATION) =====
-function removeTeamMember(userId) {
-    const user = appState.users.find(u => u.id === userId);
-    if (!user) return;
-    
-    appState.users = appState.users.filter(u => u.id !== userId);
-    addActivity(`${user.name} jamoa'dan chiqdi`, 'leave');
-    updateMembersList();
-}
-
-// ===== USER STATUS CHANGE (SIMULATION) =====
-function setUserStatus(userId, isOnline) {
-    const user = appState.users.find(u => u.id === userId);
-    if (!user) return;
-    
-    user.isOnline = isOnline;
-    const action = isOnline ? 'kirdi' : 'chiqdi';
-    addActivity(`${user.name} ${action}`, isOnline ? 'join' : 'leave');
-    updateMembersList();
-}
-
 // ===== LOGOUT HANDLER =====
 function handleLogout() {
     if (!confirm('Rostdan chiqmoqchisiz?')) return;
     
-    const userName = appState.currentUser.name;
+    const userName = appState.currentUser.username;
     addActivity(`${userName} jamoa'dan chiqdi`, 'leave');
     
-    removeTeamMember(appState.currentUser.id);
+    // Remove user from list
+    appState.users = appState.users.filter(u => u.id !== appState.currentUser.id);
     
     appState.currentUser = null;
     appState.messages = [];
@@ -312,20 +308,14 @@ function handleLogout() {
     loginPage.classList.add('active');
     chatPage.classList.remove('active');
     
-    nameInput.value = '';
-    emailInput.value = '';
+    usernameInput.value = '';
+    passwordInput.value = '';
     messagesContainer.innerHTML = '';
     activityLog.innerHTML = '';
-    nameInput.focus();
+    usernameInput.focus();
 }
 
 // ===== UTILITY FUNCTIONS =====
-function generateAvatar(name) {
-    const emojis = ['👨', '👩', '🧑', '👨‍💼', '👩‍💼', '🧔', '👴', '👵'];
-    const index = name.charCodeAt(0) % emojis.length;
-    return emojis[index];
-}
-
 function escapeHtml(text) {
     const map = {
         '&': '&amp;',
@@ -341,26 +331,32 @@ function scrollToBottom() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// ===== DEMO: AUTO ADD TEAM MEMBERS =====
+// ===== DEMO: AUTO ADD OTHER USER WHEN LOGGED IN =====
 function initializeDemoTeam() {
-    setTimeout(() => {
-        addTeamMember('Ali Rahimov', 'ali@company.com');
-    }, 1000);
-    
-    setTimeout(() => {
-        addTeamMember('Shoxista Yusupova', 'shoxista@company.com');
-    }, 2000);
-    
-    setTimeout(() => {
-        addTeamMember('Karim Abdullayev', 'karim@company.com');
-    }, 3000);
+    // Add the other registered user automatically
+    const otherUser = registeredUsers.find(u => u.id !== appState.currentUser.id);
+    if (otherUser && !appState.users.find(u => u.id === otherUser.id)) {
+        const demoUser = {
+            id: otherUser.id,
+            username: otherUser.username,
+            email: otherUser.email,
+            avatar: otherUser.avatar,
+            joinedAt: new Date(),
+            isOnline: true
+        };
+        appState.users.push(demoUser);
+        addActivity(`${otherUser.username} jamoa'ga qo'shildi`, 'join');
+        updateMembersList();
+    }
 }
 
 // Start demo when chat page loads
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (chatPage.classList.contains('active')) {
-            initializeDemoTeam();
+            setTimeout(() => {
+                initializeDemoTeam();
+            }, 500);
             observer.disconnect();
         }
     });

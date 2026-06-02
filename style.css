@@ -95,11 +95,38 @@ body {
     background: #667eea;
     color: white;
     font-size: 16px;
+    margin-bottom: 20px;
 }
 
 .btn-primary:hover {
     background: #5568d3;
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.demo-credentials {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.demo-title {
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.demo-credentials p {
+    font-size: 13px;
+    color: #666;
+    margin: 5px 0;
+    font-family: monospace;
+}
+
+.demo-credentials strong {
+    color: #667eea;
+    font-weight: 700;
 }
 
 /* ===== CHAT PAGE ===== */
