@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Chat - Jamoa Suhbati</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app" id="app">
+        <!-- Login Page -->
+        <div id="loginPage" class="page active">
+            <div class="login-container">
+                <div class="login-box">
+                    <h1>Team Chat 💬</h1>
+                    <p class="subtitle">Jamoa Suhbati</p>
+                    
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <input 
+                                type="text" 
+                                id="nameInput" 
+                                placeholder="Ismingiz" 
+                                required
+                            >
+                        </div>
+                        <div class="form-group">
+                            <input 
+                                type="email" 
+                                id="emailInput" 
+                                placeholder="Email" 
+                                required
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-primary">Kiritish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Page -->
+        <div id="chatPage" class="page">
+            <div class="chat-container">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-header">
+                        <h2>Team Chat</h2>
+                        <button id="logoutBtn" class="btn-icon" title="Chiqish">🚪</button>
+                    </div>
+                    
+                    <div class="current-user">
+                        <div class="user-avatar">👤</div>
+                        <div class="user-info">
+                            <p class="user-name" id="currentUserName"></p>
+                            <p class="user-status online">🟢 Online</p>
+                        </div>
+                    </div>
+
+                    <div class="members-section">
+                        <h3>Jamoa A'zolari 👥</h3>
+                        <div id="membersList" class="members-list"></div>
+                    </div>
+                </aside>
+
+                <!-- Main Chat -->
+                <main class="chat-main">
+                    <!-- Chat Header -->
+                    <div class="chat-header">
+                        <h2>Jamoa Suhbati</h2>
+                        <p id="onlineMembersCount">1 online</p>
+                    </div>
+
+                    <!-- Messages Area -->
+                    <div id="messagesContainer" class="messages-container"></div>
+
+                    <!-- Activity Log -->
+                    <div id="activityLog" class="activity-log"></div>
+
+                    <!-- Message Input -->
+                    <div class="chat-input-area">
+                        <form id="messageForm">
+                            <input 
+                                type="text" 
+                                id="messageInput" 
+                                placeholder="Xabar yozing..." 
+                                autocomplete="off"
+                            >
+                            <button type="submit" class="btn-send">Yuborish</button>
+                        </form>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
